@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bidhan's Portfolio</title>
     <link rel="stylesheet" type="text/css" href="styles/style.css">
+    <script src="scripts/script.js"></script>
 </head>
 <body>
     <h1>Bidhan Acharya's Javascript Portfolio</h1>
+
+    <div id="theme">
+        <p id="theme_reader">Current Theme: Default</p>
+        <button onclick="setTheme('dark_theme')">Dark</button>
+        <button onclick="setTheme('light_theme')">Light</button>
+        <button onclick="setTheme('default_theme')">Default</button>
+    </div>
 
     <img src="bidhan.jpg" alt="Bidhan" width="200px" height="300px">
 
@@ -21,6 +29,6 @@
         <p>Stay tuned for exciting upcoming Javascript Projects</p>
     </div>
 
-    <p>&copy;Copyright 2025 Bidhan Acharya. All rights reserved.</p>
+    <p id="copyright">&copy;Copyright 2025 Bidhan Acharya. All rights reserved.</p>
 </body>
 </html>
