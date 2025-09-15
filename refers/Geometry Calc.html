@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../scripts/Geog.js"></script>
+</head>
+<body>
+    <h1> Geometry Calculator</h1>
+
+    <h3> Area of a Triangle </h3>
+
+    <img src="../pics/Area of Triangle.png" alt="Area of Triangle" width="400px" height="300px"> 
+
+    <label for="base"> Please enter the lengthg of the base: </label>
+    <input type="number" id="base" name="base">
+    <label for="height"> Please enter the length of the height: </label>
+    <input type="number" id="height" name="height">
+    <button onclick="areaFunction()">Calculate</button>
+
+    <p id="area_result">The area of the triangle is:</p>
+
+    <h3> Perimeter of a Triangle </h3>
+
+    <img src="../pics/Perimeter of Traingle.png" alt="Perimeter of Triangle" width="400px" height="300px"> 
+
+    <label for="sideA"> Please enter the length of the sideA: </label>
+    <input type="number" id="sideA" name="sideA" value="sideA">
+    <label for="sideB"> Please enter the length of the sideB: </label>
+    <input type="number" id="sideB" name="sideB" value="sideB">
+    <label for="sideC"> Please enter the length of the sideC: </label>
+    <input type="number" id="sideC" name="sideC" value="sideC">
+    <button onclick="perimeterFunction()">Calculate</button>
+
+    <p id="perimeter_result">The perimeter of the triangle is: </p>
+
+    <h3> Volume of a Pyramid </h3>
+
+    <img src="../pics/Volume of Piramid.jpg" alt="Volume of Pyramid" width="400px" height="300px"> 
+
+    <label for="length"> Please enter the length of the side: </label>
+    <input type="number" id="length" name="length" value="length">
+    <label for="width"> Please enter the width of the side: </label>
+    <input type="number" id="width" name="width" value="width">
+    <label for="heightB"> Please enter the height of the side: </label>
+    <input type="number" id="heightB" name="heightB" value="heightB">
+    <button onclick="volume()">Calculate</button>
+
+    <p id="volume_result">The volume of the Pyramid is: </p>
+
+    
+</body>
+</html>
