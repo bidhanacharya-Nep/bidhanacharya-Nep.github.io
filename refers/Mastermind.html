@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minimalist Mastermind</title>
+  <style>
+    input {
+      width: 2ch;
+      font-size: xxx-large;
+      text-align: center;
+    }
+
+    p {
+      font-size: xxx-large;
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Minimalist Mastermind</h1>
+
+  <div id="guessArea">
+    <input type="text" id="slot1" maxlength="1">
+    <input type="text" id="slot2" maxlength="1">
+    <input type="text" id="slot3" maxlength="1">
+    <input type="text" id="slot4" maxlength="1">
+  </div>
+
+  <br><button id="guess" onclick="tryGuess()">Try Guess</button><br><br>
+
+  <div id="pastGuesses"></div>
+
+  <script>
+    let code = [];
+
+    // Load a new game
+    const gameReset = () => {
+      code = [];
+
+      // Load a new code
+      for (let i = 0; i < 4; i++) {
+        code.push(Math.floor(Math.random() * 6) + 1);
+      }
+
+      // Clear past guesses
+      document.getElementById("pastGuesses").innerHTML = "";
+
+      // Return each input field to its beginning state
+      for (let i = 1; i <= 4; i++) {
+        let slot = document.getElementById("slot" + i);
+        slot.disabled = false;
+        slot.value = "";
+        slot.style.backgroundColor = "white";
+        slot.style.color = "black";
+      }
+
+      // Revert the button back to Try Guess
+      let btn = document.getElementById("guess");
+      btn.innerHTML = "Try Guess";
+      btn.setAttribute("onclick", "tryGuess()");
+
+      // Cheat code for testing
+      console.log("Secret:", code.join(""));
+    };
+
+    // Clear all slots
+    const clearSlots = () => {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById("slot" + i).value = "";
+      }
+    };
+
+    // Create custom error class to handle the game rules
+    class RuleError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "Rule Error";
+      }
+    }
+
+    // Use a try/catch block inside the checkInput function
+    // to handle errors in input validation
+    const checkInput = (raw) => {
+      try {
+        if (raw.trim() === "") throw new RuleError("Slots must contain numbers only.");
+        const n = parseInt(raw, 10);
+        if (Number.isNaN(n)) throw new RuleError("Slots must contain numbers only.");
+        if (n < 1 || n > 6) throw new RuleError("Only numbers between 1 and 6 are accepted.");
+        return true;
+      }
+      catch (e) {
+        if (e instanceof RuleError) {
+          alert(e.message); // fallback mechanism
+          return false;
+        }
+        throw e;
+      }
+    };
+
+    // Main function to check player's guess
+    const tryGuess = () => {
+      let guesses = [];
+
+      // Retrieve guesses from the page
+      for (let i = 1; i <= 4; i++) {
+        let field = document.getElementById("slot" + i);
+        if (checkInput(field.value)) {
+          guesses.push(parseInt(field.value, 10));
+        } else {
+          return;
+        }
+      }
+
+      // If there are four useful values, check results
+      if (guesses.length === 4) {
+        let correctPosition = 0;
+        let correctColor = 0;
+        const codeCopy = [...code];
+
+        // Determine correct position first
+        for (let i = 0; i < 4; i++) {
+          if (guesses[i] == codeCopy[i]) {
+            correctPosition++;
+            codeCopy[i] = "-"; // account for used peg
+          }
+        }
+
+        // Determine remaining correct colors
+        for (let i = 0; i < 4; i++) {
+          if (codeCopy.includes(guesses[i])) {
+            correctColor++;
+            codeCopy[codeCopy.indexOf(guesses[i])] = "-"; // account for used peg
+          }
+        }
+
+        // End game on win
+        if (correctPosition === 4) {
+          for (let i = 1; i <= 4; i++) {
+            let slot = document.getElementById("slot" + i);
+            slot.disabled = true;
+            slot.style.backgroundColor = "lime";
+            slot.style.color = "green";
+          }
+
+          let btn = document.getElementById("guess");
+          btn.innerHTML = "Reset Game";
+          btn.setAttribute("onclick", "gameReset()");
+        }
+
+        // Add incorrect guess to the display
+        else {
+          let output = "<p>";
+          for (let i = 0; i < 4; i++) {
+            output += "<input disabled value='" + guesses[i] + "'>";
+          }
+
+          // Add black piece for correct position
+          for (let i = 0; i < correctPosition; i++) output += "&#9823;";
+
+          // Add white piece for correct color only
+          for (let i = 0; i < correctColor; i++) output += "&#9817;";
+
+          // Update display
+          let currentDisplay = document.getElementById("pastGuesses");
+          currentDisplay.innerHTML = output + "</p>" + currentDisplay.innerHTML;
+
+          clearSlots();
+        }
+      }
+    };
+
+    // Start the game
+    gameReset();
+  </script>
+</body>
+</html>
