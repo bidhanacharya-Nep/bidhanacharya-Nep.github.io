@@ -3,7 +3,7 @@
 <head>
     <title>DOM Puzzle</title>
     <style>
-        
+        /* DO NOT modify this stylesheet */
         #puzzle {
             width: 500px;
             height: 500px;
@@ -13,119 +13,118 @@
     </style>
 </head>
 <body>
-    
+    <!-- DO NOT modify the body or div -->
     <div id="puzzle"></div>
 
-   
     <script>
+        // DOM Puzzle
 
-        const puzzle = document.getElementById("puzzle");
+        document.addEventListener("DOMContentLoaded", () => {
 
-        
-        const title = document.createElement("h1");
-        title.textContent = "DOM Puzzle";
-        title.style.textAlign = "center";
-        title.style.fontFamily = "Arial";
-        title.style.marginBottom = "0";
-        puzzle.before(title);
+            const puzzle = document.getElementById("puzzle");
+            puzzle.style.display = "grid";
+            puzzle.style.gridTemplateColumns = "250px 250px";
+            puzzle.style.gridTemplateRows = "250px 250px";
+            puzzle.style.backgroundColor = "#7338A0";
+            puzzle.style.transition = "border-color 0.3s ease";
 
-        //Create Wrapper Grid
-        const wrapper = document.createElement("div");
-        wrapper.style.display = "grid";
-        wrapper.style.gridTemplateColumns = "250px 250px";
-        wrapper.style.gridTemplateRows = "250px 250px";
-        wrapper.style.width = "500px";
-        wrapper.style.height = "500px";
-        puzzle.appendChild(wrapper);
+            // title above puzzle
+            const header = document.createElement("h1");
+            header.textContent = "DOM Puzzle";
+            header.style.textAlign = "center";
+            header.style.fontFamily = "Arial";
+            header.style.marginBottom = "0";
+            document.body.insertBefore(header, puzzle);
 
-        //2x2 Color Grid
-        const colorGrid = document.createElement("div");
-        colorGrid.style.display = "grid";
-        colorGrid.style.gridTemplateColumns = "repeat(2, 1fr)";
-        colorGrid.style.gridTemplateRows = "repeat(2, 1fr)";
-        colorGrid.style.width = "250px";
-        colorGrid.style.height = "250px";
+            // 2x2 color grid (top-left)
+            const colorGrid = document.createElement("div");
+            colorGrid.style.display = "grid";
+            colorGrid.style.gridTemplateColumns = "125px 125px";
+            colorGrid.style.gridTemplateRows = "125px 125px";
+            colorGrid.style.width = "250px";
+            colorGrid.style.height = "250px";
 
-        const colors = ["#9455F4", "#4A2B74", "#594492", "#854DDC"];
-        const letters = ["A", "B", "C", "D"];
+            const colors = ["#9455F4", "#4A2B74", "#594492", "#854DDC"];
+            const labels = ["A", "B", "C", "D"];
 
-        for (let i = 0; i < 4; i++) {
-            const box = document.createElement("div");
-            box.textContent = letters[i];
-            box.style.display = "flex";
-            box.style.alignItems = "center";
-            box.style.justifyContent = "center";
-            box.style.fontSize = "2em";
-            box.style.color = "white";
-            box.style.border = "1px solid black";
-            box.style.backgroundColor = colors[i];
-            colorGrid.appendChild(box);
-        }
-
-        //Function to Create 10x10 Button Grid
-        function makeButtons() {
-            const buttonGrid = document.createElement("div");
-            buttonGrid.style.display = "grid";
-            buttonGrid.style.gridTemplateColumns = "repeat(10, 25px)";
-            buttonGrid.style.gridTemplateRows = "repeat(10, 25px)";
-            buttonGrid.style.width = "250px";
-            buttonGrid.style.height = "250px";
-            buttonGrid.style.backgroundColor = "#7338A0";
-
-            const buttons = [];
-
-            for (let i = 0; i < 100; i++) {
-                const btn = document.createElement("button");
-                btn.style.width = "25px";
-                btn.style.height = "25px";
-                btn.style.margin = "0";
-                btn.style.padding = "0";
-                btn.style.border = "0.5px solid #4A2754";
-                btn.style.backgroundColor = "#B97CE8";
-                buttons.push(btn);
-                buttonGrid.appendChild(btn);
+            for (let i = 0; i < 4; i++) {
+                const box = document.createElement("div");
+                box.textContent = labels[i];
+                box.style.display = "flex";
+                box.style.alignItems = "center";
+                box.style.justifyContent = "center";
+                box.style.fontSize = "2em";
+                box.style.color = "white";
+                box.style.border = "1px solid black";
+                box.style.backgroundColor = colors[i];
+                colorGrid.appendChild(box);
             }
 
-            //Button Click Functionality
-            buttons.forEach((btn, i) => {
-                btn.addEventListener("click", () => {
-                    btn.style.backgroundColor = "#4A2754";  
-                    if (buttons[i - 1]) buttons[i - 1].style.backgroundColor = "#FFE600"; 
-                    if (buttons[i + 1]) buttons[i + 1].style.backgroundColor = "#FFE600";
+            
+            const topRight = document.createElement("div");
+            topRight.style.backgroundColor = "#7338A0";
+
+            const bottomLeft = document.createElement("div");
+            bottomLeft.style.backgroundColor = "#7338A0";
+
+            // bottom-right 10x10 button grid
+            function makeSmallGrid() {
+                const grid = document.createElement("div");
+                grid.style.display = "grid";
+                grid.style.gridTemplateColumns = "repeat(10, 25px)";
+                grid.style.gridTemplateRows = "repeat(10, 25px)";
+                grid.style.width = "250px";
+                grid.style.height = "250px";
+                grid.style.backgroundColor = "#7338A0";
+
+                const buttons = [];
+
+                for (let i = 0; i < 100; i++) {
+                    const btn = document.createElement("button");
+                    btn.style.width = "25px";
+                    btn.style.height = "25px";
+                    btn.style.margin = "0";
+                    btn.style.padding = "0";
+                    btn.style.border = "0.5px solid #4A2754";
+                    btn.style.backgroundColor = "#B97CE8";
+                    buttons.push(btn);
+                    grid.appendChild(btn);
+                }
+
+                // click behavior
+                buttons.forEach((btn, i) => {
+                    btn.addEventListener("click", () => {
+                        btn.style.backgroundColor = "#4A2754";
+                        if (buttons[i - 1]) buttons[i - 1].style.backgroundColor = "#FFE600";
+                        if (buttons[i + 1]) buttons[i + 1].style.backgroundColor = "#FFE600";
+                    });
                 });
+
+                return grid;
+            }
+
+            // assemble layout into puzzle grid
+            puzzle.appendChild(colorGrid);         // top-left
+            puzzle.appendChild(topRight);          // top-right
+            puzzle.appendChild(bottomLeft);        // bottom-left
+            puzzle.appendChild(makeSmallGrid());   // bottom-right
+
+            // description below puzzle
+            const description = document.createElement("p");
+            description.textContent = "This is a puzzle created entirely with JavaScript.";
+            description.style.textAlign = "center";
+            description.style.fontWeight = "bold";
+            description.style.marginTop = "10px";
+            document.body.appendChild(description);
+
+            // border highlight events
+            puzzle.addEventListener("mouseenter", () => {
+                puzzle.style.borderColor = "gold";
             });
 
-            return buttonGrid;
-        }
-
-        
-        wrapper.appendChild(colorGrid);                            // top-left (color grid)
-
-        const topRight = document.createElement("div");             // top-right (colored background)
-        topRight.style.backgroundColor = "#7338A0";
-        wrapper.appendChild(topRight);
-
-        const bottomLeft = document.createElement("div");           // bottom-left (colored background)
-        bottomLeft.style.backgroundColor = "#7338A0";
-        wrapper.appendChild(bottomLeft);
-
-        wrapper.appendChild(makeButtons());                         // bottom-right (button grid)
-
-        //Description Below Puzzle
-        const desc = document.createElement("p");
-        desc.textContent = "This is a puzzle created entirely with JavaScript.";
-        desc.style.textAlign = "center";
-        desc.style.fontWeight = "bold";
-        desc.style.marginTop = "10px";
-        puzzle.after(desc);
-
-        //Border Hover Effect
-        puzzle.addEventListener("mouseenter", () => {
-            puzzle.style.borderColor = "gold";
-        });
-
-        puzzle.addEventListener("mouseleave", () => {
-            puzzle.style.borderColor = "black";
+            puzzle.addEventListener("mouseleave", () => {
+                puzzle.style.borderColor = "black";
+            });
         });
     </script>
 </body>
