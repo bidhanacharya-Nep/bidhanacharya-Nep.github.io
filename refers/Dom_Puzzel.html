@@ -3,7 +3,7 @@
 <head>
     <title>DOM Puzzle</title>
     <style>
-        /* NOTE: DO NOT modify this stylesheet */
+        
         #puzzle {
             width: 500px;
             height: 500px;
@@ -13,18 +13,15 @@
     </style>
 </head>
 <body>
-    <!-- NOTE: DO NOT modify the body or div -->
+    
     <div id="puzzle"></div>
 
-    <!-- All puzzle code must be implemented here -->
+   
     <script>
-        // ===================================
-        //          DOM PUZZLE - Bidhan A.
-        // ===================================
 
         const puzzle = document.getElementById("puzzle");
 
-        // ---- Add Title Above Puzzle ----
+        
         const title = document.createElement("h1");
         title.textContent = "DOM Puzzle";
         title.style.textAlign = "center";
@@ -32,7 +29,7 @@
         title.style.marginBottom = "0";
         puzzle.before(title);
 
-        // ---- Create Wrapper Grid ----
+        //Create Wrapper Grid
         const wrapper = document.createElement("div");
         wrapper.style.display = "grid";
         wrapper.style.gridTemplateColumns = "250px 250px";
@@ -41,7 +38,7 @@
         wrapper.style.height = "500px";
         puzzle.appendChild(wrapper);
 
-        // ---- 2x2 Color Grid ----
+        //2x2 Color Grid
         const colorGrid = document.createElement("div");
         colorGrid.style.display = "grid";
         colorGrid.style.gridTemplateColumns = "repeat(2, 1fr)";
@@ -65,7 +62,7 @@
             colorGrid.appendChild(box);
         }
 
-        // ---- Function to Create 10x10 Button Grid ----
+        //Function to Create 10x10 Button Grid
         function makeButtons() {
             const buttonGrid = document.createElement("div");
             buttonGrid.style.display = "grid";
@@ -89,11 +86,11 @@
                 buttonGrid.appendChild(btn);
             }
 
-            // ---- Button Click Functionality ----
+            //Button Click Functionality
             buttons.forEach((btn, i) => {
                 btn.addEventListener("click", () => {
-                    btn.style.backgroundColor = "#4A2754";  // dark purple
-                    if (buttons[i - 1]) buttons[i - 1].style.backgroundColor = "#FFE600"; // orange
+                    btn.style.backgroundColor = "#4A2754";  
+                    if (buttons[i - 1]) buttons[i - 1].style.backgroundColor = "#FFE600"; 
                     if (buttons[i + 1]) buttons[i + 1].style.backgroundColor = "#FFE600";
                 });
             });
@@ -101,7 +98,7 @@
             return buttonGrid;
         }
 
-        // ---- Assemble Puzzle Layout ----
+        
         wrapper.appendChild(colorGrid);                            // top-left (color grid)
 
         const topRight = document.createElement("div");             // top-right (colored background)
@@ -114,7 +111,7 @@
 
         wrapper.appendChild(makeButtons());                         // bottom-right (button grid)
 
-        // ---- Add Description Below Puzzle ----
+        //Description Below Puzzle
         const desc = document.createElement("p");
         desc.textContent = "This is a puzzle created entirely with JavaScript.";
         desc.style.textAlign = "center";
@@ -122,7 +119,7 @@
         desc.style.marginTop = "10px";
         puzzle.after(desc);
 
-        // ---- Border Hover Effect ----
+        //Border Hover Effect
         puzzle.addEventListener("mouseenter", () => {
             puzzle.style.borderColor = "gold";
         });
