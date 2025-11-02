@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Submission Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #CC9767;
+            color: black;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: left;
+        }
+
+        form {
+            margin-top: 15px;
+            max-width: 500px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 7px 14px;
+            border: 1px solid black;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #f3f3f3;
+        }
+
+        #userMsg, #passMsg {
+            font-size: 13px;
+            color: darkred;
+        }
+
+        #passMsg strong {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comment Submission Form</h1>
+
+    <form id="feedbackForm">
+
+        <label for="fullName">Name:</label>
+        <input type="text" id="fullName" name="fullName"
+               placeholder="i.e. Warren Buffet"
+               pattern="[A-Za-z\s]+" required>
+
+        <label for="phoneNum">Phone Number:</label>
+        <input type="tel" id="phoneNum" name="phoneNum"
+               placeholder="XXX-XXX-XXXX"
+               pattern="\d{3}-\d{3}-\d{4}" required>
+
+        <label for="emailAddr">Email Address:</label>
+        <input type="email" id="emailAddr" name="emailAddr"
+               placeholder=" eg. myname@gmail.com" autocomplete="email" required>
+
+        <label for="userComment">Comment:</label>
+        <textarea id="userComment" name="userComment"
+                  placeholder="Please write your comment here!" required></textarea>
+
+        <label for="userName">Username:</label>
+        <input type="text" id="userName" name="userName"
+               placeholder="4 - 8 characters"
+               pattern="[a-zA-Z0-9_]{4,8}" required>
+        <span id="userMsg"></span>
+
+        <label for="userPass">Password:</label>
+        <input type="password" id="userPass" name="userPass" required>
+        <span id="passMsg"></span>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById("userName").addEventListener("input", function() {
+            let nameValue = this.value;
+            let message = document.getElementById("userMsg");
+            let rule = /^[a-zA-Z0-9_]{4,8}$/;
+
+            if (!rule.test(nameValue)) {
+                message.innerHTML = "Username must be 4–8 characters (letters, numbers, or underscores).";
+            } else {
+                message.innerHTML = "";
+            }
+        });
+
+        document.getElementById("userPass").addEventListener("input", function() {
+            let pass = this.value;
+            let inform = [];
+
+            if (pass.length < 8) inform.push("8 characters");
+            if (!/[a-z]/.test(pass)) inform.push("lower-case letter");
+            if (!/[A-Z]/.test(pass)) inform.push("upper-case letter");
+            if (!/[0-9]/.test(pass)) inform.push("number");
+            if (!/[!@#$%&*()]/.test(pass)) inform.push("special character (!@#$%&*())");
+
+            let u = document.getElementById("userName").value;
+            if (u && pass.includes(u)) inform.push("cannot contain username");
+
+            let passMsg = document.getElementById("passMsg");
+
+            if (inform.length > 0) {
+                passMsg.innerHTML = "<strong>Missing:</strong> " + inform.join(", ");
+            } else {
+                passMsg.innerHTML = "<strong>Password Strength:</strong> Strong";
+            }
+        });
+
+        function cleanInput(text) {
+            return text.replace(/&/g, "&amp;")
+                       .replace(/</g, "&lt;")
+                       .replace(/>/g, "&gt;")
+                       .replace(/"/g, "&quot;")
+                       .replace(/'/g, "&apos;");
+        }
+
+        document.getElementById("feedbackForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            let safeData = {
+                name: cleanInput(document.getElementById("fullName").value),
+                phone: cleanInput(document.getElementById("phoneNum").value),
+                email: cleanInput(document.getElementById("emailAddr").value),
+                comment: cleanInput(document.getElementById("userComment").value),
+                username: cleanInput(document.getElementById("userName").value),
+                password: cleanInput(document.getElementById("userPass").value)
+            };
+
+            console.log("Sanitized data:", safeData);
+            alert("Submitted successfully!");
+
+            document.getElementById("feedbackForm").reset();
+            document.getElementById("userMsg").innerHTML = "";
+            document.getElementById("passMsg").innerHTML = "";
+        });
+    </script>
+</body>
+</html>
