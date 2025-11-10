@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To Do List</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --panel: #f6f6f6;
+      --accent: #222;
+    }
+    body.dark {
+      --bg: #222222;
+      --fg: #f1f1f1;
+      --panel: #2e2e2e;
+      --accent: #eaeaea;
+    }
+    body {
+      margin: 0;
+      padding: 28px 20px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    h1, h3 { margin: 0 0 12px 0; }
+    form, .panel {
+      max-width: 600px;
+      background: var(--panel);
+      padding: 14px;
+      border-radius: 6px;
+      margin: 12px 0;
+    }
+    label { font-weight: bold; display:block; margin-bottom: 6px; }
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 7px 12px;
+      border: 1px solid var(--accent);
+      background: #fff;
+      color: #000;
+      cursor: pointer;
+    }
+    body.dark button { background: #333; color: #fff; }
+    ul { list-style: none; padding-left: 0; margin: 10px 0 0; }
+    li {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px;
+      background: #fff; color:#000;
+      padding: 8px 10px; border-radius: 4px; margin-bottom: 6px;
+    }
+    body.dark li { background: #3a3a3a; color:#fff; }
+    .small { font-size: 14px; opacity: 0.9; }
+    .row { display:flex; align-items:center; gap: 10px; flex-wrap: wrap; }
+    .quote { font-style: italic; }
+    .err { color: #b00020; }
+    .muted { opacity: .8; }
+  </style>
+</head>
+<body>
+
+  <h1>To Do List</h1>
+
+  <div class="panel row">
+    <button id="themeToggle" type="button">Toggle Theme (Light/Dark)</button>
+    <span class="small"><b>Added this session:</b> <span id="sessionAdded">0</span></span>
+    <span class="small"><b>Tasks saved:</b> <span id="taskCount">0</span></span>
+  </div>
+
+  <form id="todoForm" novalidate>
+    <label for="taskText">Task</label>
+    <input id="taskText" name="taskText" type="text" required placeholder="Type a task and press Add">
+    <button id="addBtn" type="submit">Add Task</button>
+    <div id="taskMsg" class="small err"></div>
+  </form>
+
+  <div class="panel">
+    <h3>Your Tasks</h3>
+    <ul id="taskList"></ul>
+    <div class="small muted" id="emptyMsg" style="display:none;">No tasks yet.</div>
+  </div>
+
+  <div class="panel">
+    <h3>Random Joke</h3>
+    <p id="quoteText" class="quote">Loading joke…</p>
+    <button id="quoteBtn" type="button">Load Another Joke</button>
+    <div id="quoteErr" class="small err"></div>
+  </div>
+
+  <script>
+    const LS_KEY = 'tasks_v1';
+    const SS_KEY = 'session_added_v1';
+    const form = document.getElementById('todoForm');
+    const taskText = document.getElementById('taskText');
+    const taskMsg = document.getElementById('taskMsg');
+    const taskListEl = document.getElementById('taskList');
+    const emptyMsg = document.getElementById('emptyMsg');
+    const sessionAddedEl = document.getElementById('sessionAdded');
+    const taskCountEl = document.getElementById('taskCount');
+    const themeToggle = document.getElementById('themeToggle');
+    const quoteText = document.getElementById('quoteText');
+    const quoteBtn = document.getElementById('quoteBtn');
+    const quoteErr = document.getElementById('quoteErr');
+
+    function sanitize(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function loadTasks() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+      catch { return []; }
+    }
+
+    function saveTasks(arr) {
+      localStorage.setItem(LS_KEY, JSON.stringify(arr));
+    }
+
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + d.toUTCString() + '; path=/';
+    }
+
+    function getCookie(name) {
+      const parts = document.cookie.split('; ');
+      for (let i = 0; i < parts.length; i++) {
+        const [k, v] = parts[i].split('=');
+        if (k === name) return decodeURIComponent(v || '');
+      }
+      return '';
+    }
+
+    function renderTasks() {
+      const tasks = loadTasks();
+      taskListEl.innerHTML = '';
+      if (tasks.length === 0) {
+        emptyMsg.style.display = 'block';
+      } else {
+        emptyMsg.style.display = 'none';
+        tasks.forEach((t, idx) => {
+          const li = document.createElement('li');
+          const span = document.createElement('span');
+          span.textContent = t;
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.textContent = 'Remove';
+          del.addEventListener('click', () => removeTask(idx));
+          li.appendChild(span);
+          li.appendChild(del);
+          taskListEl.appendChild(li);
+        });
+      }
+      taskCountEl.textContent = tasks.length;
+    }
+
+    function addTask(text) {
+      const clean = sanitize(text.trim());
+      if (clean.length === 0) {
+        taskMsg.textContent = 'Please enter a task.';
+        return;
+      }
+      taskMsg.textContent = '';
+      const tasks = loadTasks();
+      tasks.push(clean);
+      saveTasks(tasks);
+      const current = Number(sessionStorage.getItem(SS_KEY) || '0') + 1;
+      sessionStorage.setItem(SS_KEY, String(current));
+      sessionAddedEl.textContent = current;
+      renderTasks();
+      form.reset();
+      taskText.focus();
+    }
+
+    function removeTask(index) {
+      const tasks = loadTasks();
+      tasks.splice(index, 1);
+      saveTasks(tasks);
+      renderTasks();
+    }
+
+    function applyTheme(theme) {
+      document.body.classList.toggle('dark', theme === 'dark');
+      document.body.classList.toggle('light', theme === 'light');
+    }
+
+    function initTheme() {
+      const saved = getCookie('theme_pref') || 'light';
+      applyTheme(saved);
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.body.classList.contains('dark') ? 'light' : 'dark';
+      applyTheme(next);
+      setCookie('theme_pref', next, 365);
+    });
+
+    async function loadQuote() {
+      quoteErr.textContent = '';
+      try {
+        const res = await fetch('https://official-joke-api.appspot.com/random_joke');
+        if (!res.ok) throw new Error('Network error');
+        const data = await res.json();
+        const setup = sanitize(data.setup || 'No joke found.');
+        const punchline = sanitize(data.punchline || '');
+        quoteText.innerHTML = `"${setup}"<br>— ${punchline}`;
+      } catch (e) {
+        quoteText.textContent = 'Could not load a joke right now.';
+        quoteErr.textContent = 'Please check your connection and try again.';
+      }
+    }
+
+    quoteBtn.addEventListener('click', loadQuote);
+
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      addTask(taskText.value);
+    });
+
+    (function start() {
+      const n = Number(sessionStorage.getItem(SS_KEY) || '0');
+      sessionAddedEl.textContent = n;
+      initTheme();
+      renderTasks();
+      loadQuote();
+    })();
+  </script>
+</body>
+</html>
